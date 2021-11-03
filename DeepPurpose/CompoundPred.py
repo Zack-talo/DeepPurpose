@@ -476,7 +476,8 @@ class Property_Prediction:
 			os.makedirs(path_dir)
 		#torch.save(self.model.state_dict(), path_dir + '/model.pt')
 		torch.save(self.model.state_dict(), path_dir)
-		save_dict(path_dir, self.config)
+		#save_dict(path_dir, self.config)
+		save_dict('./', self.config)
 
 	def load_pretrained(self, path):
 		if not os.path.exists(path):
