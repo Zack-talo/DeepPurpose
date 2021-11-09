@@ -655,7 +655,7 @@ class Property_Prediction:
 			if not epo % epoch_interval:
 				if not os.path.exists(path_dir):
 					os.makedirs(path_dir)
-				torch.save(self.model.state_dict(), path_dir+'_epoch'+epo+'.pt')
+				torch.save(self.model.state_dict(), path_dir+'_epoch'+str(epo)+'.pt')
 				save_dict('./', self.config)
 
 				#Setting train_save function to save model at every pre-defined interval:
