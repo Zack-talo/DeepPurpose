@@ -653,7 +653,7 @@ class Property_Prediction:
 
 			if not epo % epoch_interval:
 				#Setting train_save function to save model at every pre-defined interval:
-				model.save_model(self, path_dir+'_epoch'+epo+'.pt'):
+				model.save_model(self, path_dir+'_epoch'+epo+'.pt')
 
 		#### after training 
 		prettytable_file = os.path.join(self.result_folder, "valid_markdowntable.txt")
