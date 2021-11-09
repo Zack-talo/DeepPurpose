@@ -29,7 +29,7 @@ from DeepPurpose.encoders import *
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-
+ 
 class Classifier(nn.Sequential):
 	def __init__(self, model_drug, **config):
 		super(Classifier, self).__init__()
