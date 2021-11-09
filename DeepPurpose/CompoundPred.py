@@ -651,9 +651,15 @@ class Property_Prediction:
 						 + str(r2)[:7] + ' with p-value: ' + str(f"{p_val:.2E}") +' , Concordance Index: '+str(CI)[:7])
 			table.add_row(lst)
 
+			#Setting train_save function to save model at every pre-defined interval:
 			if not epo % epoch_interval:
+				if not os.path.exists(path_dir):
+					os.makedirs(path_dir)
+				torch.save(self.model.state_dict(), path_dir+'_epoch'+epo+'.pt')
+				save_dict('./', self.config)
+
 				#Setting train_save function to save model at every pre-defined interval:
-				model_max.save_model(self, path_dir+'_epoch'+epo+'.pt')
+				#model_max.save_model(self, path_dir+'_epoch'+epo+'.pt')
 
 		#### after training 
 		prettytable_file = os.path.join(self.result_folder, "valid_markdowntable.txt")
