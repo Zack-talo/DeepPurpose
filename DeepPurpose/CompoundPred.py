@@ -503,3 +503,206 @@ class Property_Prediction:
 		self.binary = self.config['binary']
 
 
+	def train_save(self, train, val, test = None, verbose = True, path_dir, epoch_interval = 5):
+		if len(train.Label.unique()) == 2:
+			self.binary = True
+			self.config['binary'] = True
+
+		lr = self.config['LR']
+		decay = self.config['decay']
+
+		BATCH_SIZE = self.config['batch_size']
+		train_epoch = self.config['train_epoch']
+		if 'test_every_X_epoch' in self.config.keys():
+			test_every_X_epoch = self.config['test_every_X_epoch']
+		else:     
+			test_every_X_epoch = 40
+		loss_history = []
+
+		self.model = self.model.to(self.device)
+
+		# support multiple GPUs
+		if torch.cuda.device_count() > 1:
+			if verbose:
+				print("Let's use " + str(torch.cuda.device_count()) + " GPUs!")
+			self.model = nn.DataParallel(self.model, dim = 0)
+		elif torch.cuda.device_count() == 1:
+			if verbose:
+				print("Let's use " + str(torch.cuda.device_count()) + " GPU!")
+		else:
+			if verbose:
+				print("Let's use CPU/s!")
+		# Future TODO: support multiple optimizers with parameters
+		opt = torch.optim.Adam(self.model.parameters(), lr = lr, weight_decay = decay)
+
+		if verbose:
+			print('--- Data Preparation ---')
+
+		params = {'batch_size': BATCH_SIZE,
+	    		'shuffle': True,
+	    		'num_workers': self.config['num_workers'],
+	    		'drop_last': False}
+		if (self.drug_encoding == "MPNN"):
+			params['collate_fn'] = mpnn_collate_func
+		elif self.drug_encoding in ['DGL_GCN', 'DGL_NeuralFP', 'DGL_GIN_AttrMasking', 'DGL_GIN_ContextPred', 'DGL_AttentiveFP']:
+			params['collate_fn'] = dgl_collate_func
+
+		training_generator = data.DataLoader(data_process_loader_Property_Prediction(train.index.values, 
+																					 train.Label.values, 
+																					 train, **self.config), 
+											**params)
+		validation_generator = data.DataLoader(data_process_loader_Property_Prediction(val.index.values, 
+																						val.Label.values, 
+																						val, **self.config), 
+											**params)
+		
+		if test is not None:
+			info = data_process_loader_Property_Prediction(test.index.values, test.Label.values, test, **self.config)
+			params_test = {'batch_size': BATCH_SIZE,
+					'shuffle': False,
+					'num_workers': self.config['num_workers'],
+					'drop_last': False,
+					'sampler':SequentialSampler(info)}
+        
+			if (self.drug_encoding == "MPNN"):
+				params_test['collate_fn'] = mpnn_collate_func
+			elif self.drug_encoding in ['DGL_GCN', 'DGL_GAT', 'DGL_NeuralFP', 'DGL_GIN_AttrMasking', 'DGL_GIN_ContextPred', 'DGL_AttentiveFP']:
+				params_test['collate_fn'] = dgl_collate_func
+			testing_generator = data.DataLoader(data_process_loader_Property_Prediction(test.index.values, test.Label.values, test, **self.config), **params_test)
+
+		# early stopping
+		if self.binary:
+			max_auc = 0
+		else:
+			max_MSE = 10000
+		model_max = copy.deepcopy(self.model)
+
+		valid_metric_record = []
+		valid_metric_header = ["# epoch"] 
+		if self.binary:
+			valid_metric_header.extend(["AUROC", "AUPRC", "F1"])
+		else:
+			valid_metric_header.extend(["MSE", "Pearson Correlation", "with p-value", "Concordance Index"])
+		table = PrettyTable(valid_metric_header)
+		float2str = lambda x:'%0.4f'%x
+
+		if verbose:
+			print('--- Go for Training ---')
+		t_start = time() 
+		for epo in range(train_epoch):
+			for i, (v_d, label) in enumerate(training_generator):
+				
+				if self.drug_encoding in ["MPNN", 'Transformer', 'DGL_GCN', 'DGL_NeuralFP', 'DGL_GIN_AttrMasking', 'DGL_GIN_ContextPred', 'DGL_AttentiveFP']:
+					v_d = v_d
+				else:
+					v_d = v_d.float().to(self.device)                
+					#score = self.model(v_d, v_p.float().to(self.device))
+               
+				score = self.model(v_d)
+				label = Variable(torch.from_numpy(np.array(label)).float()).to(self.device)
+
+				if self.binary:
+					loss_fct = torch.nn.BCELoss()
+					m = torch.nn.Sigmoid()
+					n = torch.squeeze(m(score), 1)
+					loss = loss_fct(n, label)
+				else:
+					loss_fct = torch.nn.MSELoss()
+					n = torch.squeeze(score, 1)
+					loss = loss_fct(n, label)
+				loss_history.append(loss.item())
+
+				opt.zero_grad()
+				loss.backward()
+				opt.step()
+
+				if verbose:
+					if (i % 100 == 0):
+						t_now = time()
+						if verbose:
+							print('Training at Epoch ' + str(epo + 1) + ' iteration ' + str(i) + \
+							' with loss ' + str(loss.cpu().detach().numpy())[:7] +\
+							". Total time " + str(int(t_now - t_start)/3600)[:7] + " hours") 
+						### record total run time
+
+			##### validate, select the best model up to now 
+			with torch.set_grad_enabled(False):
+				if self.binary:  
+					## binary: ROC-AUC, PR-AUC, F1  
+					auc, auprc, f1, logits = self.test_(validation_generator, self.model)
+					lst = ["epoch " + str(epo)] + list(map(float2str,[auc, auprc, f1]))
+					valid_metric_record.append(lst)
+					if auc > max_auc:
+						model_max = copy.deepcopy(self.model)
+						max_auc = auc
+					if verbose:
+						print('Validation at Epoch '+ str(epo + 1) + ' , AUROC: ' + str(auc)[:7] + \
+						  ' , AUPRC: ' + str(auprc)[:7] + ' , F1: '+str(f1)[:7])
+				else:  
+					### regression: MSE, Pearson Correlation, with p-value, Concordance Index  
+					mse, r2, p_val, CI, logits = self.test_(validation_generator, self.model)
+					lst = ["epoch " + str(epo)] + list(map(float2str,[mse, r2, p_val, CI]))
+					valid_metric_record.append(lst)
+					if mse < max_MSE:
+						model_max = copy.deepcopy(self.model)
+						max_MSE = mse
+					if verbose:
+						print('Validation at Epoch '+ str(epo + 1) + ' , MSE: ' + str(mse)[:7] + ' , Pearson Correlation: '\
+						 + str(r2)[:7] + ' with p-value: ' + str(f"{p_val:.2E}") +' , Concordance Index: '+str(CI)[:7])
+			table.add_row(lst)
+
+			if not epo % epoch_interval:
+				#Setting train_save function to save model at every pre-defined interval:
+				model.save_model(self, path_dir+'_epoch'+epo'.pt'):
+
+		#### after training 
+		prettytable_file = os.path.join(self.result_folder, "valid_markdowntable.txt")
+		with open(prettytable_file, 'w') as fp:
+			fp.write(table.get_string())
+
+		# load early stopped model
+		self.model = model_max
+
+		if test is not None:
+			if verbose:
+				print('--- Go for Testing ---')
+			if self.binary:
+				auc, auprc, f1, logits = self.test_(testing_generator, model_max, test = True, verbose = verbose)
+				test_table = PrettyTable(["AUROC", "AUPRC", "F1"])
+				test_table.add_row(list(map(float2str, [auc, auprc, f1])))
+				if verbose:
+					print('Testing AUROC: ' + str(auc) + ' , AUPRC: ' + str(auprc) + ' , F1: '+str(f1))				
+			else:
+				mse, r2, p_val, CI, logits = self.test_(testing_generator, model_max, test = True, verbose = verbose)
+				test_table = PrettyTable(["MSE", "Pearson Correlation", "with p-value", "Concordance Index"])
+				test_table.add_row(list(map(float2str, [mse, r2, p_val, CI])))
+				if verbose:
+					print('Testing MSE: ' + str(mse) + ' , Pearson Correlation: ' + str(r2) 
+					  + ' with p-value: ' + str(f"{p_val:.2E}") +' , Concordance Index: '+str(CI))
+			np.save(os.path.join(self.result_folder, str(self.drug_encoding)
+				     + '_logits.npy'), np.array(logits))                
+
+			######### learning record ###########
+
+			### 1. test results
+			prettytable_file = os.path.join(self.result_folder, "test_markdowntable.txt")
+			with open(prettytable_file, 'w') as fp:
+				fp.write(test_table.get_string())
+
+		if verbose:
+		### 2. learning curve 
+			fontsize = 16
+			iter_num = list(range(1,len(loss_history)+1))
+			plt.figure(3)
+			plt.plot(iter_num, loss_history, "bo-")
+			plt.xlabel("iteration", fontsize = fontsize)
+			plt.ylabel("loss value", fontsize = fontsize)
+			pkl_file = os.path.join(self.result_folder, "loss_curve_iter.pkl")
+			with open(pkl_file, 'wb') as pck:
+				pickle.dump(loss_history, pck)
+
+			fig_file = os.path.join(self.result_folder, "loss_curve.png")
+			plt.savefig(fig_file)
+		if verbose:
+			print('--- Training Finished ---')
+          
