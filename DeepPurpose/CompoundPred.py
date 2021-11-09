@@ -503,7 +503,7 @@ class Property_Prediction:
 		self.binary = self.config['binary']
 
 
-	def train_save(self, train, val, test = None, verbose = True, path_dir, epoch_interval = 5):
+	def train_save(self, train, val, test = None, path_dir, epoch_interval = 5, verbose = True):
 		if len(train.Label.unique()) == 2:
 			self.binary = True
 			self.config['binary'] = True
