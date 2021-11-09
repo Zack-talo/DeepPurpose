@@ -659,7 +659,7 @@ class Property_Prediction:
 				save_dict('./', self.config)
 
 				#Setting train_save function to save model at every pre-defined interval:
-				#model_max.save_model(self, path_dir+'_epoch'+epo+'.pt')
+				#model_max.save_model(self, path_dir+'_epoch'+str(epo)+'.pt')
 
 		#### after training 
 		prettytable_file = os.path.join(self.result_folder, "valid_markdowntable.txt")
