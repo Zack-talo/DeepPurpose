@@ -472,8 +472,8 @@ class Property_Prediction:
 		return score
 
 	def save_model(self, path, predictor_name):
-		if not os.path.exists(path_dir):
-			os.makedirs(path_dir)
+		if not os.path.exists(path):
+			os.makedirs(path)
 		#torch.save(self.model.state_dict(), path_dir + '/model.pt')
 		torch.save(self.model.state_dict(), path + "/model_" + predictor_name + ".pt")
 		#save_dict(path_dir, self.config)
