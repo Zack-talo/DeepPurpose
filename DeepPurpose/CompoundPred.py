@@ -483,8 +483,6 @@ class Property_Prediction:
 		if not os.path.exists(path):
 			os.makedirs(path)
 		
-		print("Loading file: ", path + "/model_" + predictor_name + ".pt")
-
 		if self.device == 'cuda':
 			state_dict = torch.load(path + "/model_" + predictor_name + ".pt")
 		else:
