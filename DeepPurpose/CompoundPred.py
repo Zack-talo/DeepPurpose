@@ -471,11 +471,11 @@ class Property_Prediction:
 		# set repurposong mode to true, will return only the scores.
 		return score
 
-	def save_model(self, path_dir):
-		#if not os.path.exists(path_dir):
-		#	os.makedirs(path_dir)
+	def save_model(self, path_dir, predictor_name):
+		if not os.path.exists(path_dir):
+			os.makedirs(path_dir)
 		#torch.save(self.model.state_dict(), path_dir + '/model.pt')
-		torch.save(self.model.state_dict(), path_dir)
+		torch.save(self.model.state_dict(), path + "/model_" + predictor_name + ".pt")
 		#save_dict(path_dir, self.config)
 		save_dict('./', self.config)
 
@@ -653,9 +653,9 @@ class Property_Prediction:
 
 			#Setting train_save function to save model at every pre-defined interval:
 			if not epo % epoch_interval:
-				#if not os.path.exists(path_dir):
-				#	os.makedirs(path_dir)
-				torch.save(self.model.state_dict(), path_dir+'_epoch'+str(epo+1)+'.pt')
+				if not os.path.exists(path_dir):
+					os.makedirs(path_dir)
+				torch.save(self.model.state_dict(), path + "/model_" + predictor_name + '_epoch'+str(epo+1)+'.pt')
 				save_dict('./', self.config)
 
 				#Setting train_save function to save model at every pre-defined interval:
