@@ -479,14 +479,14 @@ class Property_Prediction:
 		#save_dict(path_dir, self.config)
 		save_dict('./', self.config)
 
-	def load_pretrained(self, path):
+	def load_pretrained(self, path, predictor_name):
 		if not os.path.exists(path):
 			os.makedirs(path)
 
 		if self.device == 'cuda':
-			state_dict = torch.load(path)
+			state_dict = torch.load(path + "/model_" + predictor_name + ".pt")
 		else:
-			state_dict = torch.load(path, map_location = torch.device('cpu'))
+			state_dict = torch.load(path + "/model_" + predictor_name + ".pt", map_location = torch.device('cpu'))
 		# to support training from multi-gpus data-parallel:
         
 		if next(iter(state_dict))[:7] == 'module.':
