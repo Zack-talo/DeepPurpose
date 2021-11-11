@@ -673,6 +673,7 @@ class Property_Prediction:
 		with open(prettytable_file, 'w') as fp:
 			fp.write(table.get_string())
 
+		'''
 		# load early stopped model
 		self.model = model_max
 
@@ -719,3 +720,4 @@ class Property_Prediction:
 		if verbose:
 			print('--- Training Finished ---')
           
+		'''
