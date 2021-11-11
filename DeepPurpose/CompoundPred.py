@@ -486,7 +486,7 @@ class Property_Prediction:
 		#save_dict(path_dir, self.config)
 		save_dict('./', self.config)
 
-	def load_pretrained(self, path, predictor_name, seed, drug_encoding):
+	def load_pretrained(self, path, predictor_name, seed, drug_encoding, epo):
 		if not os.path.exists(path):
 			os.makedirs(path)
 		
