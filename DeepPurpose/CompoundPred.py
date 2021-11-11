@@ -492,10 +492,10 @@ class Property_Prediction:
 		
 		if self.device == 'cuda':
 			state_dict = torch.load(
-				path_dir + "/model_" + predictor_name + '_' + str(self.drug_encoding) + '_s' + str(seed) + '_epoch'+ str(epo) +'.pt')
+				path + "/model_" + predictor_name + '_' + str(self.drug_encoding) + '_s' + str(seed) + '_epoch'+ str(epo) +'.pt')
 		else:
 			state_dict = torch.load(
-				path_dir + "/model_" + predictor_name + '_' + str(self.drug_encoding) + '_s' + str(seed) + '_epoch'+ str(epo) +'.pt',
+				path + "/model_" + predictor_name + '_' + str(self.drug_encoding) + '_s' + str(seed) + '_epoch'+ str(epo) +'.pt',
 						map_location = torch.device('cpu'))
 		# to support training from multi-gpus data-parallel:
         
