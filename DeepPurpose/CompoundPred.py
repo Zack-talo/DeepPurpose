@@ -510,7 +510,7 @@ class Property_Prediction:
 		self.binary = self.config['binary']
 
 
-	def train_save(self, train, val, path_dir, predictor_name, test = None, epoch_interval = 5, verbose = True):
+	def train_save(self, train, val, path_dir, predictor_name, seed, test = None, epoch_interval = 5, verbose = True):
 		if len(train.Label.unique()) == 2:
 			self.binary = True
 			self.config['binary'] = True
@@ -666,7 +666,7 @@ class Property_Prediction:
 				save_dict('./', self.config)
 
 				#Setting train_save function to save model at every pre-defined interval:
-				#model_max.save_model(self, path_dir+'_epoch'+str(epo)+'.pt')
+				#model_max.save_model(self, path_dir + '_s' + str(seed) + '_epo'+str(epo)+'.pt')
 
 		#### after training 
 		prettytable_file = os.path.join(self.result_folder, "valid_markdowntable.txt")
