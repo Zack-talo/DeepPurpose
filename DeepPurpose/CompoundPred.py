@@ -474,6 +474,11 @@ class Property_Prediction:
 	def save_model(self, path, predictor_name=None, seed=None, epo=None):
 		if not os.path.exists(path):
 			os.makedirs(path)
+
+		if predictor not None AND seed not None AND epo not None:
+			path_name = path_name + "/" + predictor_name + "_" + seed + "_" + epo + ".pt"
+		else:
+			path_name = '/model.pt'
 		#torch.save(self.model.state_dict(), path_dir + '/model.pt')
 		torch.save(self.model.state_dict(), path + "/" + predictor_name + "_" + seed + "_" + epo + ".pt")
 		#save_dict(path_dir, self.config)
