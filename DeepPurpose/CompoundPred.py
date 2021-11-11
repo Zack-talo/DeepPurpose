@@ -486,14 +486,17 @@ class Property_Prediction:
 		#save_dict(path_dir, self.config)
 		save_dict('./', self.config)
 
-	def load_pretrained(self, path, predictor_name):
+	def load_pretrained(self, path, predictor_name, seed, drug_encoding, epoch_interval):
 		if not os.path.exists(path):
 			os.makedirs(path)
 		
 		if self.device == 'cuda':
-			state_dict = torch.load(path + "/model_" + predictor_name + ".pt")
+			state_dict = torch.load(
+				path_dir + "/model_" + predictor_name + '_' + str(self.drug_encoding) + '_s' + str(seed) + '_epoch'+ str(epo) +'.pt')
 		else:
-			state_dict = torch.load(path + "/model_" + predictor_name + ".pt", map_location = torch.device('cpu'))
+			state_dict = torch.load(
+				path_dir + "/model_" + predictor_name + '_' + str(self.drug_encoding) + '_s' + str(seed) + '_epoch'+ str(epo) +'.pt',
+						map_location = torch.device('cpu'))
 		# to support training from multi-gpus data-parallel:
         
 		if next(iter(state_dict))[:7] == 'module.':
@@ -662,7 +665,8 @@ class Property_Prediction:
 			if not epo % epoch_interval:
 				if not os.path.exists(path_dir):
 					os.makedirs(path_dir)
-				torch.save(self.model.state_dict(), path_dir + "/model_" + predictor_name + '_' + str(self.drug_encoding) + '_s' + str(seed) + '_epoch'+ str(epo) +'.pt')
+				torch.save(self.model.state_dict(), path_dir + "/model_" + predictor_name + '_' + str(self.drug_encoding) + '_s'
+					   + str(seed) + '_epoch'+ str(epo) +'.pt')
 				save_dict('./', self.config)
 
 				#Setting train_save function to save model at every pre-defined interval:
