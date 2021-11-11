@@ -471,11 +471,11 @@ class Property_Prediction:
 		# set repurposong mode to true, will return only the scores.
 		return score
 
-	def save_model(self, path, predictor_name):
+	def save_model(self, path, predictor_name=None, seed=None, epo=None):
 		if not os.path.exists(path):
 			os.makedirs(path)
 		#torch.save(self.model.state_dict(), path_dir + '/model.pt')
-		torch.save(self.model.state_dict(), path + "/model_" + predictor_name + ".pt")
+		torch.save(self.model.state_dict(), path + "/" + predictor_name + "_" + seed + "_" + epo + ".pt")
 		#save_dict(path_dir, self.config)
 		save_dict('./', self.config)
 
