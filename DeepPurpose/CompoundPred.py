@@ -510,7 +510,7 @@ class Property_Prediction:
 		self.binary = self.config['binary']
 
 
-	def train_save(self, train, val, path_dir, test = None, epoch_interval = 5, verbose = True):
+	def train_save(self, train, val, path_dir, predictor_name, test = None, epoch_interval = 5, verbose = True):
 		if len(train.Label.unique()) == 2:
 			self.binary = True
 			self.config['binary'] = True
