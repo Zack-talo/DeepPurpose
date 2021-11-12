@@ -674,7 +674,7 @@ class Property_Prediction:
 
 		#### after training 
 		prettytable_file = os.path.join(self.result_folder,
-			predictor_name + '_' + str(self.drug_encoding) + '_s' + str(seed) + '_'+ "valid_markdowntable.txt")
+			predictor_name + '_' + str(self.drug_encoding) + '_s' + str(seed) + '_epo' + train_epoch + '_'+ "valid_markdowntable.txt")
 		with open(prettytable_file, 'w') as fp:
 			fp.write(table.get_string())
 
@@ -699,13 +699,13 @@ class Property_Prediction:
 					print('Testing MSE: ' + str(mse) + ' , Pearson Correlation: ' + str(r2) 
 					  + ' with p-value: ' + str(f"{p_val:.2E}") +' , Concordance Index: '+str(CI))
 			np.save(os.path.join(self.result_folder, 
-				predictor_name + '_' + str(self.drug_encoding) + '_s' + str(seed) + '_logits.npy'), np.array(logits))                
+				predictor_name + '_' + str(self.drug_encoding) + '_s' + str(seed) + '_epo' + train_epoch + '_logits.npy'), np.array(logits))                
 
 			######### learning record ###########
 
 			### 1. test results
 			prettytable_file = os.path.join(self.result_folder, 
-				predictor_name + '_' + str(self.drug_encoding) + '_s' + str(seed) + '_'+ "test_markdowntable.txt")
+				predictor_name + '_' + str(self.drug_encoding) + '_s' + str(seed) + '_epo' + train_epoch + '_'+ "test_markdowntable.txt")
 			with open(prettytable_file, 'w') as fp:
 				fp.write(test_table.get_string())
 
@@ -718,12 +718,12 @@ class Property_Prediction:
 			plt.xlabel("iteration", fontsize = fontsize)
 			plt.ylabel("loss value", fontsize = fontsize)
 			pkl_file = os.path.join(self.result_folder,
-				predictor_name + '_' + str(self.drug_encoding) + '_s' + str(seed) + '_'+ "loss_curve_iter.pkl")
+				predictor_name + '_' + str(self.drug_encoding) + '_s' + str(seed) + '_epo' + train_epoch + '_'+ "loss_curve_iter.pkl")
 			with open(pkl_file, 'wb') as pck:
 				pickle.dump(loss_history, pck)
 
 			fig_file = os.path.join(self.result_folder,
-				predictor_name + '_' + str(self.drug_encoding) + '_s' + str(seed) + '_'+ "loss_curve.png")
+				predictor_name + '_' + str(self.drug_encoding) + '_s' + str(seed) + '_epo' + train_epoch + '_'+ "loss_curve.png")
 			plt.savefig(fig_file)
 		if verbose:
 			print('--- Training Finished ---')
