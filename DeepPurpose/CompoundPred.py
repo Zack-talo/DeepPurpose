@@ -224,7 +224,8 @@ class Property_Prediction:
 		model.train()
 		if self.binary:
 			if repurposing_mode:
-				return y_pred
+				#return y_pred
+				return outputs
 			## ROC-AUC curve
 			if test:
 				if verbose:
