@@ -601,7 +601,9 @@ class Property_Prediction:
 			print('--- Go for Training ---')
 		t_start = time() 
 		for epo in range(train_epoch):
+			count = 0
 			for i, (v_d, label) in enumerate(training_generator):
+				count += 1
 				
 				if self.drug_encoding in ["MPNN", 'Transformer', 'DGL_GCN', 'DGL_NeuralFP', 'DGL_GIN_AttrMasking', 'DGL_GIN_ContextPred', 'DGL_AttentiveFP']:
 					v_d = v_d
@@ -622,7 +624,7 @@ class Property_Prediction:
 					n = torch.squeeze(score, 1)
 					loss = loss_fct(n, label)
 				loss_history.append(loss.item())
-				print(epo, ' : ', loss.item())
+				print(count, ':', epo, ' : ', loss.item())
 				
 				opt.zero_grad()
 				loss.backward()
