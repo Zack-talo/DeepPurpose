@@ -622,9 +622,8 @@ class Property_Prediction:
 					n = torch.squeeze(score, 1)
 					loss = loss_fct(n, label)
 				loss_history.append(loss.item())
-				print('loss_item: ', loss.item())
-				pause()
-
+				print(epo, ' : ', loss.item())
+				
 				opt.zero_grad()
 				loss.backward()
 				opt.step()
