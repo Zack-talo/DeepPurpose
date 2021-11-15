@@ -568,7 +568,7 @@ class Property_Prediction:
 											**params)
 		
 		print("train.index.values: ", train.index.values)
-		print("**params: ", **params)
+		print("params: ", *params)
 		if test is not None:
 			info = data_process_loader_Property_Prediction(test.index.values, test.Label.values, test, **self.config)
 			params_test = {'batch_size': BATCH_SIZE,
