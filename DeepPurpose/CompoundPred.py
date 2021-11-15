@@ -600,6 +600,7 @@ class Property_Prediction:
 		if verbose:
 			print('--- Go for Training ---')
 		t_start = time() 
+		print("training_generator:\n", training_generator)
 		for epo in range(train_epoch):
 			count = 0
 			for i, (v_d, label) in enumerate(training_generator):
