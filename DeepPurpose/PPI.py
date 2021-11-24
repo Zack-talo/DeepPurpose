@@ -352,7 +352,7 @@ class PPI_Model:
 			utils.data_process_repurpose_virtual_screening 
 			pd.DataFrame
 		'''
-		print('predicting...')
+		#print('predicting...')
 		self.model.to(device)
 		info = data_process_PPI_loader(df_data.index.values, df_data.Label.values, df_data, **self.config)
 		params = {'batch_size': self.config['batch_size'],
