@@ -99,7 +99,7 @@ class Protein_Prediction:
 		if 'decay' not in self.config.keys():
 			self.config['decay'] = 0
 
-	def test_(self, data_generator, model, repurposing_mode = False, test = False, verbose = True):
+	def test_(self, data_generator, model, repurposing_mode = False, test = False, verbose = False):
 		y_pred = []
 		y_label = []
 		model.eval()
@@ -144,7 +144,7 @@ class Protein_Prediction:
 				   pearsonr(y_label, y_pred)[1], \
 				   concordance_index(y_label, y_pred), y_pred
 
-	def train(self, train, val, test = None, verbose = True):
+	def train(self, train, val, test = None, verbose = False):
 		if len(train.Label.unique()) == 2:
 			self.binary = True
 			self.config['binary'] = True
@@ -335,7 +335,7 @@ class Protein_Prediction:
 			print('--- Training Finished ---')
           
 
-	def predict(self, df_data, verbose = True):
+	def predict(self, df_data, verbose = False):
 		'''
 			utils.data_process_repurpose_virtual_screening 
 			pd.DataFrame
