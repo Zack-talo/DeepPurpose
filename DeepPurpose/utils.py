@@ -480,7 +480,7 @@ def data_process(X_drug = None, X_target = None, y=None, drug_encoding=None, tar
 		y = [-1]*len(X_drug) # create temp y for compatitibility
 	
 	if DTI_flag:
-		print('Drug Target Interaction Prediction Mode...')
+		#print('Drug Target Interaction Prediction Mode...')
 		if isinstance(X_target, str):
 			X_target = [X_target]
 		if len(X_target) == 1:
@@ -492,45 +492,45 @@ def data_process(X_drug = None, X_target = None, y=None, drug_encoding=None, tar
 								1: 'Target Sequence',
 								2: 'Label'}, 
 								inplace=True)
-		print('in total: ' + str(len(df_data)) + ' drug-target pairs')
+		#print('in total: ' + str(len(df_data)) + ' drug-target pairs')
 
 	elif property_prediction_flag:
-		print('Drug Property Prediction Mode...')
+		#print('Drug Property Prediction Mode...')
 		df_data = pd.DataFrame(zip(X_drug, y))
 		df_data.rename(columns={0:'SMILES',
 								1: 'Label'}, 
 								inplace=True)
-		print('in total: ' + str(len(df_data)) + ' drugs')
+		#print('in total: ' + str(len(df_data)) + ' drugs')
 	elif function_prediction_flag:
-		print('Protein Function Prediction Mode...')
+		#print('Protein Function Prediction Mode...')
 		df_data = pd.DataFrame(zip(X_target, y))
 		df_data.rename(columns={0:'Target Sequence',
 								1: 'Label'}, 
 								inplace=True)
-		print('in total: ' + str(len(df_data)) + ' proteins')
+		#print('in total: ' + str(len(df_data)) + ' proteins')
 	elif PPI_flag:
-		print('Protein Protein Interaction Prediction Mode...')
+		#print('Protein Protein Interaction Prediction Mode...')
 
 		df_data = pd.DataFrame(zip(X_target, X_target_, y))
 		df_data.rename(columns={0: 'Target Sequence 1',
 								1: 'Target Sequence 2',
 								2: 'Label'}, 
 								inplace=True)
-		print('in total: ' + str(len(df_data)) + ' protein-protein pairs')
+		#print('in total: ' + str(len(df_data)) + ' protein-protein pairs')
 	elif DDI_flag:
-		print('Drug Drug Interaction Prediction Mode...')
+		#print('Drug Drug Interaction Prediction Mode...')
 
 		df_data = pd.DataFrame(zip(X_drug, X_drug_, y))
 		df_data.rename(columns={0: 'SMILES 1',
 								1: 'SMILES 2',
 								2: 'Label'}, 
 								inplace=True)
-		print('in total: ' + str(len(df_data)) + ' drug-drug pairs')
+		#print('in total: ' + str(len(df_data)) + ' drug-drug pairs')
 
 
 	if sample_frac != 1:
 		df_data = df_data.sample(frac = sample_frac).reset_index(drop = True)
-		print('after subsample: ' + str(len(df_data)) + ' data points...') 
+		#print('after subsample: ' + str(len(df_data)) + ' data points...') 
 
 	if DTI_flag:
 		df_data = encode_drug(df_data, drug_encoding)
@@ -551,7 +551,7 @@ def data_process(X_drug = None, X_target = None, y=None, drug_encoding=None, tar
 		if split_method == 'repurposing_VS':
 			pass
 		else:
-			print('splitting dataset...')
+			#print('splitting dataset...')
 
 		if split_method == 'random': 
 			train, val, test = create_fold(df_data, random_seed, frac)
@@ -594,12 +594,12 @@ def data_process(X_drug = None, X_target = None, y=None, drug_encoding=None, tar
 			val = df_data
 			test = df_data
 		elif split_method == 'no_split':
-			print('do not do train/test split on the data for already splitted data')
+			#print('do not do train/test split on the data for already splitted data')
 			return df_data.reset_index(drop=True)
 		else:
 			train, val, test = create_fold(df_data, random_seed, frac)
 
-	print('Done.')
+	#print('Done.')
 	return train.reset_index(drop=True), val.reset_index(drop=True), test.reset_index(drop=True)
 
 def data_process_repurpose_virtual_screening(X_repurpose, target, drug_encoding, target_encoding, mode):
