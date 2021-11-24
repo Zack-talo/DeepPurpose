@@ -556,7 +556,7 @@ class DBTA:
 			utils.data_process_repurpose_virtual_screening 
 			pd.DataFrame
 		'''
-		print('predicting...')
+		#print('predicting...')
 		info = data_process_loader(df_data.index.values, df_data.Label.values, df_data, **self.config)
 		self.model.to(self.device)
 		params = {'batch_size': self.config['batch_size'],
