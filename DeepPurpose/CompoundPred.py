@@ -69,7 +69,7 @@ def model_pretrained(path_dir = None, model = None):
 	return model
 
 def repurpose(X_repurpose, model, drug_names = None, 
-			  result_folder = "./result/", convert_y = False, output_num_max = 10, verbose = True):
+			  result_folder = "./result/", convert_y = False, output_num_max = 10, verbose = False):
 	# X_repurpose: a list of SMILES string
 	fo = os.path.join(result_folder, "repurposing.txt")
 	print_list = []
@@ -198,7 +198,7 @@ class Property_Prediction:
 		if 'decay' not in self.config.keys():
 			self.config['decay'] = 0
 
-	def test_(self, data_generator, model, repurposing_mode = False, test = False, verbose = True):
+	def test_(self, data_generator, model, repurposing_mode = False, test = False, verbose = False):
 		y_pred = []
 		y_label = []
 		model.eval()
@@ -446,7 +446,7 @@ class Property_Prediction:
 			print('--- Training Finished ---')
           
 
-	def predict(self, df_data, verbose = True):
+	def predict(self, df_data, verbose = False):
 		'''
 			utils.data_process_repurpose_virtual_screening 
 			pd.DataFrame
@@ -514,7 +514,7 @@ class Property_Prediction:
 		self.binary = self.config['binary']
 
 
-	def train_save(self, train, val, path_dir, predictor_name, seed, drug_encoding, test = None, epoch_interval = 5, verbose = True):
+	def train_save(self, train, val, path_dir, predictor_name, seed, drug_encoding, test = None, epoch_interval = 5, verbose = False):
 		if len(train.Label.unique()) == 2:
 			self.binary = True
 			self.config['binary'] = True
