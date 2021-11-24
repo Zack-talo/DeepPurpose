@@ -352,8 +352,8 @@ def create_fold_setting_cold_drug(df, fold_seed, frac):
 
 
 def encode_drug(df_data, drug_encoding, column_name = 'SMILES', save_column_name = 'drug_encoding'):
-	print('encoding drug...')
-	print('unique drugs: ' + str(len(df_data[column_name].unique())))
+	#print('encoding drug...')
+	#print('unique drugs: ' + str(len(df_data[column_name].unique())))
 	if drug_encoding == 'Morgan':
 		unique = pd.Series(df_data[column_name].unique()).apply(smiles2morgan)
 		unique_dict = dict(zip(df_data[column_name].unique(), unique))
@@ -568,7 +568,7 @@ def data_process(X_drug = None, X_target = None, y=None, drug_encoding=None, tar
 			val = df_data
 			test = df_data
 		elif split_method == 'no_split':
-			print('do not do train/test split on the data for already splitted data')
+			#print('do not do train/test split on the data for already splitted data')
 			return df_data.reset_index(drop=True)
 		else:
 			raise AttributeError("Please select one of the three split method: random, cold_drug, cold_target!")
