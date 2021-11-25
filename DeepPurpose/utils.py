@@ -550,7 +550,7 @@ def data_process(X_drug = None, X_target = None, y=None, drug_encoding=None, tar
 	if DTI_flag:
 		if split_method == 'repurposing_VS':
 			pass
-		else:
+		#else:
 			#print('splitting dataset...')
 
 		if split_method == 'random': 
