@@ -446,13 +446,18 @@ class Property_Prediction:
 			print('--- Training Finished ---')
           
 
-	def predict(self, df_data, verbose = False):
+	def predict(self, df_data, train, verbose = False):
 		'''
 			utils.data_process_repurpose_virtual_screening 
 			pd.DataFrame
 		'''
 		if verbose:
 			print('predicting...')
+
+		if len(train.Label.unique()) == 2:
+			self.binary = True
+			self.config['binary'] = True
+			
 		info = data_process_loader_Property_Prediction(df_data.index.values, df_data.Label.values, df_data, **self.config)
 		self.model.to(device)
 		params = {'batch_size': self.config['batch_size'],
