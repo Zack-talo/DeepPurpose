@@ -446,7 +446,7 @@ class Property_Prediction:
 			print('--- Training Finished ---')
           
 
-	def predict(self, df_data, train, verbose = False):
+	def predict(self, df_data, train_data, verbose = False):
 		'''
 			utils.data_process_repurpose_virtual_screening 
 			pd.DataFrame
@@ -454,7 +454,7 @@ class Property_Prediction:
 		if verbose:
 			print('predicting...')
 
-		if len(train.Label.unique()) == 2:
+		if len(train_data.Label.unique()) == 2:
 			self.binary = True
 			self.config['binary'] = True
 			
